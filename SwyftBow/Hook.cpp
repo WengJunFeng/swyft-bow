@@ -3,8 +3,6 @@
 #include "Hook.h"
 #include "StringUtils.h"
 
-#define JMP(frm, to) (int)(((int)to - (int)frm) - 5);
-
 typedef int (WINAPI * pWSASend)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
 pWSASend oWSASend = NULL;
 
