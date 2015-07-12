@@ -5,8 +5,8 @@
 #include  <iostream>
 
 const int NUM_ENTITIES = 5;
-std::vector<std::string> ignoreList;
 
+std::vector<std::string> ignoreList = { "<b>", "<B>", "</b>", "</B>", "<i>", "<I>", "</i>", "</I>", "<u>", "<U>", "</u>", "</U>" };
 std::string entities[NUM_ENTITIES][2] = {
 		{ "&amp;", "&" },
 		{ "&gt;", ">" },
@@ -71,22 +71,6 @@ string StringUtils::Rainbowify(string text, bool isRoom)
 	int sliceLength = 3;
 	float saturation = 0.8f;
 	float value = 0.8f;
-
-	if (ignoreList.size() == 0)
-	{
-		ignoreList.push_back("<b>");
-		ignoreList.push_back("<B>");
-		ignoreList.push_back("</b>");
-		ignoreList.push_back("</B>");
-		ignoreList.push_back("<i>");
-		ignoreList.push_back("<I>");
-		ignoreList.push_back("</i>");
-		ignoreList.push_back("</I>");
-		ignoreList.push_back("<u>");
-		ignoreList.push_back("<U>");
-		ignoreList.push_back("</u>");
-		ignoreList.push_back("</U>");
-	}
 
 	StringStream ss(text, ignoreList);
 	std::string feed;
