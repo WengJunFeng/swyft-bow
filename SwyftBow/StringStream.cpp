@@ -1,14 +1,6 @@
 #include "StringStream.h"
 #include <string>
 
-StringStream::StringStream(std::string stream, std::vector<std::string> ignoreList)
-{
-	this->position = 0;
-	this->stream = stream;
-	this->ignoreList = ignoreList;
-}
-
-
 void StringStream::reset()
 {
 	position = 0;
