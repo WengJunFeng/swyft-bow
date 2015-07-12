@@ -80,6 +80,7 @@
     <ClCompile Include="Hook.cpp" />
     <ClCompile Include="StringStream.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h" />

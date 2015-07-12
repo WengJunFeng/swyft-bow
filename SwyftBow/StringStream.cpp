@@ -45,10 +45,12 @@ std::string StringStream::get(int num, bool countSpaces = false)
 			feed += stream[position];
 
 			if (!countSpaces)
+			{ 
 				if (stream[position] != ' ')
 					--num;
-				else
-					--num;
+			}
+			else
+				--num;
 
 		}
 	}
