@@ -1,10 +1,11 @@
-#pragma once
 #include <iostream>
 #include <string>
 #include <regex>
 
 using namespace std;
 
+
+#pragma once
 class StringUtils
 {
 public:

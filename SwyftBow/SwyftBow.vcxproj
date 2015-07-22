@@ -78,14 +78,11 @@
     <ClCompile Include="ColorConversion.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Hook.cpp" />
-    <ClCompile Include="StringStream.cpp" />
     <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h" />
     <ClInclude Include="Hook.h" />
-    <ClInclude Include="StringStream.h" />
     <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

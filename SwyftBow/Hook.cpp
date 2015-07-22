@@ -3,15 +3,15 @@
 #include "Hook.h"
 #include "StringUtils.h"
 
-typedef int (WINAPI* pWSASend)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
+typedef int (WINAPI * pWSASend)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
 pWSASend oWSASend = NULL;
 
 void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
 {
 	BYTE *jmp = (BYTE*)malloc(len + 5);
 	DWORD dwback;
-	DWORD garbage;
 
+	DWORD garbage;
 	VirtualProtect(jmp, len + 5, PAGE_EXECUTE_READWRITE, &garbage);
 	VirtualProtect(src, len, PAGE_EXECUTE_READWRITE, &dwback);
 
@@ -28,7 +28,6 @@ void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
 
 	return (jmp - len);
 }
-
 
 int WINAPI WSASend_hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 {

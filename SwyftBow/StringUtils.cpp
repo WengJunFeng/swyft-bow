@@ -1,12 +1,10 @@
 #include "StringUtils.h"
 #include "ColorConversion.h"
-#include "StringStream.h"
 #include  <iomanip>
 #include  <iostream>
 
 const int NUM_ENTITIES = 5;
 
-std::vector<std::string> ignoreList = { "<b>", "<B>", "</b>", "</B>", "<i>", "<I>", "</i>", "</I>", "<u>", "<U>", "</u>", "</U>" };
 std::string entities[NUM_ENTITIES][2] = {
 		{ "&amp;", "&" },
 		{ "&gt;", ">" },
@@ -29,6 +27,9 @@ string ReplaceString(std::string subject, const std::string& search, const std::
 
 	return subject;
 }
+
+//Name color regex: <n(\w*)\/>
+//Message filter regex: b?msg:(.*):(.*)
 
 bool StringUtils::ProcessMessage(string* text)
 {
@@ -68,14 +69,11 @@ string StringUtils::Rainbowify(string text, bool isRoom)
 	//TODO: Add GUI overlay to change these settings
 	int loopLength = 30;
 	int fontSize = 11;
-	int sliceLength = 3;
 	float saturation = 0.8f;
 	float value = 0.8f;
+	
 
-	StringStream ss(text, ignoreList);
-	std::string feed;
-
-	while ((feed = ss.get(sliceLength, false)) != "")
+	for (unsigned int i = 0; i < text.size(); i+=2)
 	{
 		if (hue + (double)(360 / (double)loopLength) > 360)
 			hue = 0;
@@ -88,13 +86,14 @@ string StringUtils::Rainbowify(string text, bool isRoom)
 		{
 			sprintf_s(strcolor, "<f x%d%02x%02x%02x=\"0\">", fontSize, (int)(color.r * 0xFF), (int)(color.g * 0xFF), (int)(color.b * 0xFF));
 			outmsg.append(strcolor);
-			outmsg.append(StringUtils::MakeHTML(feed));
+			outmsg.append(text.substr(i, 2));
 		}
 		else
 		{
-			sprintf_s(strcolor, "<g x%d%02x%02x%02x>", fontSize, (int)(color.r * 0xFF), (int)(color.g * 0xFF), (int)(color.b * 0xFF));
+			sprintf_s(strcolor, "<g x%ds%02x%02x%02x=\"\">", fontSize, (int)(color.r * 0xFF), (int)(color.g * 0xFF), (int)(color.b * 0xFF));
 			outmsg.append(strcolor);
-			outmsg.append(StringUtils::MakeHTML(feed));
+			outmsg.append(text.substr(i, 2));
+			outmsg.append("</g>");
 		}
 	}
 
@@ -111,7 +110,7 @@ string StringUtils::MakeHTML(string text)
 
 string StringUtils::StripHTML(string text)
 {
-	std::regex regex("<\\/?[^biuBIU>]*>");
+	std::regex regex("<[^<>]*>");
 	std::string result = std::regex_replace(text, regex, "");
 
 	for (int i = 0; i < NUM_ENTITIES; i++)
