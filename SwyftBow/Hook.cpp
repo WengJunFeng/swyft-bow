@@ -4,7 +4,17 @@
 #include "StringUtils.h"
 
 typedef int (WINAPI * pWSASend)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
+
+typedef struct
+{
+	char* string;
+	char* end;
+} WSBUFFER, *PWSBUFFER;
+
 pWSASend oWSASend = NULL;
+DWORD SendFrameAddress = 0;
+DWORD SendFrameReturn = 0;
+PWSBUFFER WebsocketBuffer;
 
 void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
 {
@@ -27,6 +37,23 @@ void *DetourFunc(BYTE *src, const BYTE *dst, const int len)
 	VirtualProtect(src, len, dwback, &dwback);
 
 	return (jmp - len);
+}
+
+__declspec(naked) void SendFrameHook()
+{
+	__asm
+	{
+		mov eax, [edi + 0x04]
+		sub eax, ecx
+		mov [WebsocketBuffer], edi
+	}
+
+	//TODO: PROCESSING HERE
+
+	__asm
+	{
+		jmp dword ptr ds : [SendFrameReturn]
+	}
 }
 
 int WINAPI WSASend_hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
@@ -53,10 +80,18 @@ bool Hook::InitHook()
 	
 	if (strstr(szProcessName, "chrome.exe") > 0)
 	{
+		//Flash hook (soon to be deprecated)
 		PBYTE apiAddress = (PBYTE)GetProcAddress(GetModuleHandle(L"ws2_32.dll"), "WSASend");
 		oWSASend = (pWSASend)DetourFunc(apiAddress, (PBYTE)&WSASend_hook, 5);
+		
+		//WebSockets SendFrame hook
+		//SendFrameAddress AoB: 8B 47 04 2B C1 3B 4F 04 50 0F 44 CA 51 8D 8B ? ? 00 00 E8 ? ? ? ? 83 F8 02 0F 84 ? ? ? ? 83 F8 01 8B 45 C8 75 04
+		SendFrameAddress = (DWORD)GetModuleHandle(L"chrome.dll") + 0x011C9202;
+		SendFrameReturn = SendFrameAddress + 5;
+		DetourFunc((PBYTE)SendFrameAddress, (PBYTE)&SendFrameHook, 5);
 		return true;
 	}
+
 	else if (strstr(szProcessName, "firefox.exe") > 0)
 	{
 		//TODO: Add a firefox hook
